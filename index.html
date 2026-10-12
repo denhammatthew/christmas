@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Christmas lists</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --snow: #EEF2F5;
+    --ink: #1C2B3A;
+    --pine: #2E5A4C;
+    --berry: #A8283B;
+    --paper: #FFFFFF;
+    --muted: #5B6976;
+    --line: #D5DDE4;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--snow);
+    color: var(--ink);
+    font: 400 17px/1.5 "Instrument Sans", system-ui, sans-serif;
+  }
+  main { max-width: 44rem; margin: 0 auto; padding: 3rem 1.25rem 6rem; }
+
+  h1 {
+    font-family: "Young Serif", Georgia, serif;
+    font-weight: 400;
+    font-size: clamp(2.6rem, 9vw, 4.2rem);
+    line-height: 1;
+    margin: 0 0 .9rem;
+    color: var(--pine);
+  }
+  header p { margin: .2rem 0; color: var(--muted); max-width: 34rem; }
+  .who { font-size: .95rem; }
+  .linkish {
+    background: none; border: 0; padding: 0; font: inherit;
+    color: var(--pine); text-decoration: underline; cursor: pointer;
+  }
+
+  nav { display: flex; gap: .5rem; flex-wrap: wrap; margin: 2rem 0 1.25rem; }
+  nav button {
+    font: inherit; font-weight: 600;
+    border: 2px solid var(--pine); background: transparent; color: var(--pine);
+    padding: .45rem 1rem; border-radius: 999px; cursor: pointer;
+  }
+  nav button[aria-pressed="true"] { background: var(--pine); color: #fff; }
+  nav .count { font-weight: 400; opacity: .8; margin-left: .35rem; }
+
+  ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .75rem; }
+  .item {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 1rem 1.1rem;
+    display: flex; gap: 1rem; align-items: center; justify-content: space-between;
+  }
+  .item h3 { font-size: 1.1rem; margin: 0; font-weight: 600; }
+  .notes { margin: .2rem 0 0; color: var(--muted); font-size: .95rem; }
+  .meta { margin: .4rem 0 0; font-size: .92rem; display: flex; gap: 1rem; flex-wrap: wrap; }
+  .meta a { color: var(--pine); font-weight: 500; }
+  .item.claimed { background: #F6F8FA; }
+  .item.claimed h3 { color: var(--muted); }
+
+  .act { display: flex; flex-direction: column; align-items: flex-end; gap: .35rem; flex-shrink: 0; }
+  .primary {
+    background: var(--berry); color: #fff; border: 0; border-radius: 10px;
+    padding: .6rem .95rem; font: inherit; font-weight: 600; cursor: pointer;
+  }
+  .primary:disabled { opacity: .55; cursor: wait; }
+  .ghost {
+    background: none; border: 0; color: var(--muted); text-decoration: underline;
+    font: inherit; font-size: .9rem; cursor: pointer; padding: .2rem;
+  }
+
+  /* The one bit of flourish: a parcel-style stamp on bought gifts */
+  .stamp {
+    font-family: "Young Serif", Georgia, serif;
+    color: var(--berry);
+    border: 2px solid var(--berry);
+    border-radius: 6px;
+    padding: .1rem .55rem;
+    transform: rotate(-4deg);
+    font-size: .95rem;
+    white-space: nowrap;
+  }
+  .stamp.pop { animation: stamp .35s cubic-bezier(.2,.9,.3,1.2); }
+  @keyframes stamp {
+    from { transform: rotate(-14deg) scale(1.7); opacity: 0; }
+    to   { transform: rotate(-4deg) scale(1); opacity: 1; }
+  }
+
+  .status { color: var(--muted); }
+  .demo {
+    background: #FFF4D6; border-radius: 10px; padding: .6rem .9rem;
+    font-size: .92rem; margin-top: 1.25rem;
+  }
+
+  dialog {
+    border: 0; border-radius: 16px; padding: 1.5rem; max-width: 24rem; width: calc(100% - 2rem);
+    color: var(--ink);
+  }
+  dialog::backdrop { background: rgba(28,43,58,.45); }
+  dialog h2 { font-family: "Young Serif", Georgia, serif; font-weight: 400; margin: 0 0 .4rem; color: var(--pine); }
+  dialog p { margin: 0 0 1rem; color: var(--muted); font-size: .95rem; }
+  dialog label { display: block; font-weight: 600; margin-bottom: .3rem; }
+  dialog input {
+    width: 100%; font: inherit; padding: .6rem .7rem; border: 2px solid var(--line); border-radius: 10px;
+  }
+  dialog input:focus { border-color: var(--pine); outline: none; }
+  .actions { display: flex; justify-content: flex-end; gap: .75rem; margin-top: 1.1rem; align-items: center; }
+
+  .toast {
+    position: fixed; left: 50%; bottom: 1.25rem; transform: translateX(-50%);
+    background: var(--ink); color: #fff; padding: .7rem 1rem; border-radius: 10px;
+    opacity: 0; transition: opacity .2s; pointer-events: none; max-width: 90vw;
+  }
+  .toast.show { opacity: 1; }
+
+  :focus-visible { outline: 3px solid var(--berry); outline-offset: 2px; }
+
+  @media (max-width: 520px) {
+    .item { flex-direction: column; align-items: stretch; }
+    .act { flex-direction: row; align-items: center; justify-content: space-between; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .stamp.pop { animation: none; }
+    .toast { transition: none; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1 id="title">Christmas lists</h1>
+    <p id="intro"></p>
+    <p class="who" id="who"></p>
+  </header>
+  <nav id="tabs" aria-label="Choose a list"></nav>
+  <section id="list" aria-live="polite"><p class="status">Loading the lists…</p></section>
+  <div id="demoNote"></div>
+</main>
+
+<dialog id="nameDialog" aria-labelledby="nameTitle">
+  <h2 id="nameTitle">Who’s buying?</h2>
+  <p>Your name appears next to the gifts you tick, so everyone knows they’re covered.</p>
+  <label for="nameInput">Your name</label>
+  <input id="nameInput" maxlength="40" autocomplete="name">
+  <div class="actions">
+    <button type="button" class="ghost" id="nameCancel">Cancel</button>
+    <button type="button" class="primary" id="nameOk">Save name</button>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ===== Settings ===== */
+const CONFIG = {
+  // Paste your Apps Script web app URL between the quotes. Leave empty to see demo data.
+  API_URL: 'https://script.google.com/macros/s/AKfycbwKplzd9th5fUW7TMIaiyoDEsDxSTbbdJ-7UNRNB6LNYiBdXEv6KAuzWXtu1Sdm-Xs/exec',
+  TITLE: 'Christmas lists'
+};
+/* ==================== */
+
+const KIDS_VIEW = new URLSearchParams(location.search).has('kids');
+const $ = s => document.querySelector(s);
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch {} }
+};
+
+let items = [];
+let active = null;
+let myName = store.get('wishlist-name') || '';
+const busy = new Set();
+let justStamped = null;
+
+const DEMO = [
+  { id: 2, child: 'Child one', item: 'Wooden train set extension', link: 'https://example.com', price: '24', notes: 'The bridge and tunnel pack', claimedBy: '' },
+  { id: 3, child: 'Child one', item: 'Wellies, size 9', link: '', price: '', notes: 'Any colour except pink', claimedBy: 'Granny' },
+  { id: 4, child: 'Child one', item: 'Dinosaur pyjamas', link: '', price: '15', notes: 'Age 3–4', claimedBy: '' },
+  { id: 5, child: 'Child two', item: 'Stacking cups', link: 'https://example.com', price: '8.50', notes: '', claimedBy: '' },
+  { id: 6, child: 'Child two', item: 'Board books', link: '', price: '', notes: 'Anything by Julia Donaldson', claimedBy: '' }
+];
+
+async function api(method, body) {
+  if (!CONFIG.API_URL) return demoApi(method, body);
+  const res = method === 'GET'
+    ? await fetch(CONFIG.API_URL)
+    : await fetch(CONFIG.API_URL, { method: 'POST', body: JSON.stringify(body) }); // text/plain avoids CORS preflight
+  if (!res.ok) throw new Error('Server returned ' + res.status);
+  return res.json();
+}
+
+async function demoApi(method, body) {
+  if (method === 'POST') {
+    const it = DEMO.find(x => x.id === body.id);
+    if (body.action === 'claim') {
+      if (it.claimedBy) return { error: it.claimedBy + ' has already bought this.', items: structuredClone(DEMO) };
+      it.claimedBy = body.name;
+    } else {
+      if (it.claimedBy.toLowerCase() !== body.name.toLowerCase()) return { error: 'Only ' + it.claimedBy + ' can untick this.' };
+      it.claimedBy = '';
+    }
+  }
+  return { items: structuredClone(DEMO) };
+}
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function safeLink(u) { return /^https?:\/\//i.test(u) ? u : ''; }
+function fmtPrice(p) {
+  if (!p) return '';
+  const n = Number(String(p).replace(/[£,]/g, ''));
+  if (!isNaN(n) && n > 0) return '£' + (Number.isInteger(n) ? n : n.toFixed(2));
+  return p;
+}
+function children() { return [...new Set(items.map(i => i.child))]; }
+
+function renderHeader() {
+  document.title = CONFIG.TITLE;
+  $('#title').textContent = CONFIG.TITLE;
+  $('#intro').textContent = KIDS_VIEW
+    ? 'Here’s what’s on everyone’s list.'
+    : 'Tick off what you’re buying so nobody doubles up.';
+  if (KIDS_VIEW) { $('#who').innerHTML = ''; return; }
+  $('#who').innerHTML = myName
+    ? 'Ticking as <strong>' + esc(myName) + '</strong>. <button class="linkish" id="changeName">Change name</button>'
+    : '';
+  const btn = $('#changeName');
+  if (btn) btn.onclick = async () => { if (await askName()) renderHeader(); render(); };
+  $('#demoNote').innerHTML = CONFIG.API_URL ? '' :
+    '<p class="demo">This is demo data. Add your Google Sheet link to the settings in this file to show the real lists.</p>';
+}
+
+function renderTabs() {
+  const kids = children();
+  if (!kids.includes(active)) active = kids[0] || null;
+  const nav = $('#tabs');
+  nav.innerHTML = '';
+  if (kids.length < 2) return;
+  kids.forEach(name => {
+    const b = document.createElement('button');
+    b.setAttribute('aria-pressed', name === active);
+    const left = items.filter(i => i.child === name && !i.claimedBy).length;
+    b.innerHTML = esc(name) + (KIDS_VIEW ? '' : '<span class="count">' + left + ' left</span>');
+    b.onclick = () => { active = name; render(); };
+    nav.appendChild(b);
+  });
+}
+
+function renderList() {
+  const box = $('#list');
+  const mine = items.filter(i => i.child === active);
+  if (!mine.length) { box.innerHTML = '<p class="status">Nothing on this list yet.</p>'; return; }
+  const ul = document.createElement('ul');
+  mine.forEach(it => {
+    const claimed = !KIDS_VIEW && !!it.claimedBy;
+    const li = document.createElement('li');
+    li.className = 'item' + (claimed ? ' claimed' : '');
+    const link = safeLink(it.link);
+    const price = fmtPrice(it.price);
+    li.innerHTML =
+      '<div class="body"><h3>' + esc(it.item) + '</h3>' +
+      (it.notes ? '<p class="notes">' + esc(it.notes) + '</p>' : '') +
+      ((price || link) ? '<p class="meta">' +
+        (price ? '<span>' + esc(price) + '</span>' : '') +
+        (link ? '<a href="' + esc(link) + '" target="_blank" rel="noopener">See it online</a>' : '') +
+      '</p>' : '') + '</div>';
+    if (!KIDS_VIEW) {
+      const act = document.createElement('div');
+      act.className = 'act';
+      const isBusy = busy.has(it.id);
+      if (claimed) {
+        act.innerHTML = '<span class="stamp' + (justStamped === it.id ? ' pop' : '') + '">Bought by ' + esc(it.claimedBy) + '</span>';
+        if (myName && it.claimedBy.toLowerCase() === myName.toLowerCase()) {
+          const u = document.createElement('button');
+          u.className = 'ghost';
+          u.textContent = isBusy ? 'Saving…' : 'Untick';
+          u.disabled = isBusy;
+          u.onclick = () => act_(it, 'unclaim');
+          act.appendChild(u);
+        }
+      } else {
+        const b = document.createElement('button');
+        b.className = 'primary';
+        b.textContent = isBusy ? 'Saving…' : 'I’m buying this';
+        b.disabled = isBusy;
+        b.onclick = () => act_(it, 'claim');
+        act.appendChild(b);
+      }
+      li.appendChild(act);
+    }
+    ul.appendChild(li);
+  });
+  box.innerHTML = '';
+  box.appendChild(ul);
+  justStamped = null;
+}
+
+function render() { renderHeader(); renderTabs(); renderList(); }
+
+function askName() {
+  return new Promise(resolve => {
+    const d = $('#nameDialog'), inp = $('#nameInput'), ok = $('#nameOk'), cancel = $('#nameCancel');
+    inp.value = myName;
+    const done = v => { if (d.open) d.close(); ok.onclick = cancel.onclick = d.oncancel = inp.onkeydown = null; resolve(v); };
+    ok.onclick = () => {
+      const v = inp.value.trim();
+      if (!v) { inp.focus(); return; }
+      myName = v; store.set('wishlist-name', v); done(v);
+    };
+    cancel.onclick = () => done(null);
+    d.oncancel = () => done(null);
+    inp.onkeydown = e => { if (e.key === 'Enter') ok.click(); };
+    d.showModal(); inp.focus();
+  });
+}
+
+let toastTimer;
+function toast(msg) {
+  const t = $('#toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+async function act_(it, action) {
+  if (action === 'claim' && !myName) { if (!await askName()) return; }
+  busy.add(it.id); render();
+  try {
+    const r = await api('POST', { action, id: it.id, item: it.item, name: myName });
+    if (r.items) items = r.items;
+    if (r.error) toast(r.error);
+    else {
+      toast(action === 'claim' ? 'Ticked: ' + it.item : 'Unticked: ' + it.item);
+      if (action === 'claim') justStamped = it.id;
+    }
+  } catch {
+    toast('Couldn’t save that. Check your connection and try again.');
+  }
+  busy.delete(it.id); render();
+}
+
+async function load(first) {
+  try {
+    const r = await api('GET');
+    items = r.items || [];
+    if (!busy.size) render();
+  } catch {
+    if (first) $('#list').innerHTML = '<p class="status">Couldn’t load the lists. Check your connection and refresh the page.</p>';
+  }
+}
+
+renderHeader();
+load(true);
+// Pick up other people's ticks while the page is open
+setInterval(() => { if (document.visibilityState === 'visible') load(false); }, 60000);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') load(false); });
+</script>
+</body>
+</html>
