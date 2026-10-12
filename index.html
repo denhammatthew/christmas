@@ -304,12 +304,20 @@
 
 <dialog id="nameDialog" aria-labelledby="nameTitle">
   <h2 id="nameTitle">Who’s buying?</h2>
-  <p>Your name appears next to the gifts you tick, so everyone knows they’re covered.</p>
+  <p>Only Matthew and Sophie see your name. Everyone else just sees that the gift is taken.</p>
   <label for="nameInput">Your name</label>
   <input id="nameInput" maxlength="40" autocomplete="name">
   <div class="actions">
     <button type="button" class="ghost" id="nameCancel">Cancel</button>
     <button type="button" class="primary" id="nameOk">Save name</button>
+  </div>
+</dialog>
+
+<dialog id="thanksDialog" aria-labelledby="thanksTitle">
+  <h2 id="thanksTitle">Thank you!</h2>
+  <p id="thanksText"></p>
+  <div class="actions">
+    <button type="button" class="primary" id="thanksOk">Close</button>
   </div>
 </dialog>
 
@@ -321,6 +329,8 @@ const CONFIG = {
   // Paste your Apps Script web app URL between the quotes. Leave empty to see demo data.
   API_URL: 'https://script.google.com/macros/s/AKfycbwKplzd9th5fUW7TMIaiyoDEsDxSTbbdJ-7UNRNB6LNYiBdXEv6KAuzWXtu1Sdm-Xs/exec',
   TITLE: 'Christmas lists',
+  // Shown after someone ticks a gift. {gift} is replaced with the gift's name.
+  THANKS: 'Thanks for getting “{gift}”. It’s now marked as gifted, so nobody else will buy it. If you’d like to post it, just message Matthew or Sophie and we’ll send you our address.',
   // Welcome section at the top. Put the photo in the same GitHub folder as this file.
   HERO: {
     photo: 'jasper.jpg',
@@ -375,15 +385,17 @@ const store = {
 let items = [];
 let active = null;
 let myName = store.get('wishlist-name') || '';
+const myTicks = new Set((() => { try { return JSON.parse(store.get('wishlist-mine') || '[]'); } catch { return []; } })());
+function saveMine() { store.set('wishlist-mine', JSON.stringify([...myTicks])); }
 const busy = new Set();
 let justStamped = null;
 
 const DEMO = [
-  { id: 2, child: 'Child one', item: 'Wooden train set extension', link: 'https://example.com', price: '24', notes: 'The bridge and tunnel pack', claimedBy: '' },
-  { id: 3, child: 'Child one', item: 'Wellies, size 9', link: '', price: '', notes: 'Any colour except pink', claimedBy: 'Granny' },
-  { id: 4, child: 'Child one', item: 'Dinosaur pyjamas', link: '', price: '15', notes: 'Age 3–4', claimedBy: '' },
-  { id: 5, child: 'Child two', item: 'Stacking cups', link: 'https://example.com', price: '8.50', notes: '', claimedBy: '' },
-  { id: 6, child: 'Child two', item: 'Board books', link: '', price: '', notes: 'Anything by Julia Donaldson', claimedBy: '' }
+  { id: 2, child: 'Child one', item: 'Wooden train set extension', link: 'https://example.com', price: '24', notes: 'The bridge and tunnel pack', claimed: false },
+  { id: 3, child: 'Child one', item: 'Wellies, size 9', link: '', price: '', notes: 'Any colour except pink', claimed: true, by: 'Granny' },
+  { id: 4, child: 'Child one', item: 'Dinosaur pyjamas', link: '', price: '15', notes: 'Age 3–4', claimed: false },
+  { id: 5, child: 'Child two', item: 'Stacking cups', link: 'https://example.com', price: '8.50', notes: '', claimed: false },
+  { id: 6, child: 'Child two', item: 'Board books', link: '', price: '', notes: 'Anything by Julia Donaldson', claimed: false }
 ];
 
 async function api(method, body) {
@@ -399,14 +411,17 @@ async function demoApi(method, body) {
   if (method === 'POST') {
     const it = DEMO.find(x => x.id === body.id);
     if (body.action === 'claim') {
-      if (it.claimedBy) return { error: it.claimedBy + ' has already bought this.', items: structuredClone(DEMO) };
-      it.claimedBy = body.name;
+      if (it.claimed) return { error: 'Someone has already bought this.', items: demoItems() };
+      it.claimed = true; it.by = body.name;
     } else {
-      if (it.claimedBy.toLowerCase() !== body.name.toLowerCase()) return { error: 'Only ' + it.claimedBy + ' can untick this.' };
-      it.claimedBy = '';
+      if ((it.by || '').toLowerCase() !== body.name.toLowerCase()) return { error: 'Only the person who ticked this can untick it.' };
+      it.claimed = false; it.by = '';
     }
   }
-  return { items: structuredClone(DEMO) };
+  return { items: demoItems() };
+}
+function demoItems() {
+  return DEMO.map(({ by, ...rest }) => ({ ...rest }));
 }
 
 function esc(s) {
@@ -455,7 +470,7 @@ function renderTabs() {
     const b = document.createElement('button');
     b.setAttribute('aria-pressed', name === active);
     const list = itemsFor(name);
-    const left = list.filter(i => !i.claimedBy).length;
+    const left = list.filter(i => !i.claimed).length;
     b.innerHTML = esc(name) + (KIDS_VIEW || !list.length ? '' : '<span class="count">' + left + ' left</span>');
     b.onclick = () => { active = name; render(); };
     nav.appendChild(b);
@@ -472,7 +487,7 @@ function renderList() {
   }
   const ul = document.createElement('ul');
   mine.forEach(it => {
-    const claimed = !KIDS_VIEW && !!it.claimedBy;
+    const claimed = !KIDS_VIEW && !!it.claimed;
     const li = document.createElement('li');
     li.className = 'item' + (claimed ? ' claimed' : '');
     const link = safeLink(it.link);
@@ -497,8 +512,8 @@ function renderList() {
       if (claimed) {
         const col = document.createElement('div');
         col.className = 'claim-col';
-        col.innerHTML = '<span class="stamp' + (justStamped === it.id ? ' pop' : '') + '">Bought by ' + esc(it.claimedBy) + '</span>';
-        if (myName && it.claimedBy.toLowerCase() === myName.toLowerCase()) {
+        col.innerHTML = '<span class="stamp' + (justStamped === it.id ? ' pop' : '') + '">Already gifted</span>';
+        if (myTicks.has(String(it.id) + '|' + it.item)) {
           const u = document.createElement('button');
           u.className = 'ghost';
           u.textContent = isBusy ? 'Saving…' : 'Untick';
@@ -543,6 +558,13 @@ function askName() {
   });
 }
 
+function thanks(it) {
+  const d = $('#thanksDialog');
+  $('#thanksText').textContent = (CONFIG.THANKS || 'Thank you!').replace('{gift}', it.item);
+  $('#thanksOk').onclick = () => d.close();
+  d.showModal();
+}
+
 let toastTimer;
 function toast(msg) {
   const t = $('#toast');
@@ -558,8 +580,9 @@ async function act_(it, action) {
     if (r.items) items = r.items;
     if (r.error) toast(r.error);
     else {
-      toast(action === 'claim' ? 'Ticked: ' + it.item : 'Unticked: ' + it.item);
-      if (action === 'claim') justStamped = it.id;
+      const key = String(it.id) + '|' + it.item;
+      if (action === 'claim') { myTicks.add(key); saveMine(); justStamped = it.id; thanks(it); }
+      else { myTicks.delete(key); saveMine(); toast('Unticked: ' + it.item); }
     }
   } catch {
     toast('Couldn’t save that. Check your connection and try again.');
