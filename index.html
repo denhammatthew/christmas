@@ -213,6 +213,21 @@
     .thumb-link:hover .thumb { transform: scale(2.6); box-shadow: 0 12px 30px rgba(5,20,40,.35); }
   }
   @media (prefers-reduced-motion: reduce) { .thumb { transition: none; } }
+  .hero img { width: 15rem; height: 15rem; margin-bottom: 1.5rem; }
+  .hero[hidden], .view[hidden] { display: none; }
+  .choices { display: flex; flex-wrap: wrap; gap: .75rem; justify-content: center; margin-top: 1.75rem; }
+  .choices a { text-decoration: none; font-size: 1.1rem; padding: .8rem 1.4rem; border-radius: 12px; }
+  .secondary {
+    display: inline-block; background: var(--green, #1F7A4D); color: #fff; font-weight: 600;
+    box-shadow: 0 3px 0 #14532F;
+  }
+  .back { display: inline-block; color: #fff; margin-bottom: 1.5rem; font-weight: 500; text-underline-offset: 3px; }
+  .back::before { content: "\2039  "; font-size: 1.2em; }
+  .crosslink { color: #D8E6F3; text-align: center; margin: 2.5rem 0 0; }
+  .crosslink a { color: var(--gold, #F2C94C); font-weight: 600; }
+  .extras.view { margin: 0; }
+  body:not([data-view="home"]) main { padding-top: 2.5rem; }
+  @media (max-width: 520px) { .hero img { width: 12rem; height: 12rem; } .choices a { flex: 1 1 100%; text-align: center; } }
   /* ===== North Pole theme ===== */
   main { padding-top: 7rem; }
   .hero, .guide {
@@ -262,12 +277,19 @@
     <img id="heroPhoto" alt="" hidden>
     <h1 id="heroTitle"></h1>
     <div id="heroText"></div>
-    <a class="primary" href="#lists">See his list</a>
+    <div class="choices">
+      <a class="primary" href="#list">Jasper’s list</a>
+      <a class="secondary" href="#ideas">Choosing your own gift</a>
+    </div>
   </section>
-  <div class="extras">
+  <div class="extras view" id="ideasView" hidden>
+    <a class="back" href="#">Back to the start</a>
     <section class="santa" id="santa" hidden></section>
     <section class="guide" id="guide" hidden></section>
+    <p class="crosslink">Prefer to pick from the list? <a href="#list">See Jasper’s list</a></p>
   </div>
+  <div class="view" id="listView" hidden>
+  <a class="back" href="#">Back to the start</a>
   <header id="lists">
     <h2 class="list-title" id="title">Christmas lists</h2>
     <p id="intro"></p>
@@ -276,6 +298,8 @@
   <nav id="tabs" aria-label="Choose a list"></nav>
   <section id="list" aria-live="polite"><p class="status">Loading the lists…</p></section>
   <div id="demoNote"></div>
+  <p class="crosslink">Want to choose something yourself? <a href="#ideas">Ideas and sizes</a></p>
+  </div>
 </main>
 
 <dialog id="nameDialog" aria-labelledby="nameTitle">
@@ -312,7 +336,7 @@ const CONFIG = {
   },
   // Gift ideas for anyone choosing something not on the list. Delete this block to hide it.
   GUIDE: {
-    heading: 'Choosing something yourself',
+    heading: 'Choosing your own gift',
     intro: 'His list is just ideas. If you’d rather pick something yourself, here’s what he loves at the moment.',
     sections: [
       { title: 'Ideas', items: [
@@ -590,8 +614,20 @@ function renderExtras() {
   if (!sa && !g) document.querySelector('.extras').remove();
 }
 
+function route() {
+  const h = location.hash.replace('#', '');
+  const view = h === 'list' || h === 'lists' ? 'list' : h === 'ideas' ? 'ideas' : 'home';
+  document.querySelector('.hero').hidden = view !== 'home';
+  $('#listView').hidden = view !== 'list';
+  $('#ideasView').hidden = view !== 'ideas';
+  document.body.dataset.view = view;
+  window.scrollTo(0, 0);
+}
+window.addEventListener('hashchange', route);
+
 renderHero();
 renderExtras();
+route();
 renderHeader();
 load(true);
 // Pick up other people's ticks while the page is open
