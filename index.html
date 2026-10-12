@@ -197,6 +197,22 @@
     background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 4px;
   }
   .item.claimed .thumb { opacity: .55; }
+  .act { flex-direction: row; align-items: center; gap: .9rem; }
+  .claim-col { display: flex; flex-direction: column; align-items: flex-end; gap: .25rem; }
+  .price { font-size: 1.35rem; font-weight: 600; color: var(--ink); white-space: nowrap; margin: 0; }
+  .body .price { font-size: 1.1rem; margin-top: .3rem; }
+  .item.claimed .price { color: var(--muted); }
+  .gift-link { color: inherit; text-decoration: none; }
+  .gift-link .ext { width: .8em; height: .8em; margin-left: .35em; vertical-align: -.05em; opacity: .45; }
+  .gift-link:hover, .gift-link:focus-visible { color: var(--green, #1F7A4D); text-decoration: underline; text-underline-offset: 3px; }
+  .gift-link:hover .ext { opacity: 1; }
+  .thumb-link { display: block; flex-shrink: 0; position: relative; z-index: 1; }
+  .thumb { transition: transform .18s ease, box-shadow .18s ease; transform-origin: left center; }
+  @media (hover: hover) {
+    .thumb-link:hover { z-index: 5; }
+    .thumb-link:hover .thumb { transform: scale(2.6); box-shadow: 0 12px 30px rgba(5,20,40,.35); }
+  }
+  @media (prefers-reduced-motion: reduce) { .thumb { transition: none; } }
   /* ===== North Pole theme ===== */
   main { padding-top: 7rem; }
   .hero, .guide {
@@ -438,28 +454,35 @@ function renderList() {
     const link = safeLink(it.link);
     const price = fmtPrice(it.price);
     const img = safeLink(it.image || '');
+    const open = link ? '<a href="' + esc(link) + '" target="_blank" rel="noopener"' : '';
+    const thumb = img ? '<img class="thumb" src="' + esc(img) + '" alt="" loading="lazy" onerror="this.remove()">' : '';
     li.innerHTML = '<div class="lead">' +
-      (img ? '<img class="thumb" src="' + esc(img) + '" alt="" loading="lazy" onerror="this.remove()">' : '') +
-      '<div class="body"><h3>' + esc(it.item) + '</h3>' +
+      (thumb ? (link ? open + ' class="thumb-link" tabindex="-1" aria-hidden="true">' + thumb + '</a>' : thumb) : '') +
+      '<div class="body"><h3>' +
+        (link ? open + ' class="gift-link" title="Open in a new tab">' + esc(it.item) +
+          '<svg class="ext" viewBox="0 0 16 16" aria-hidden="true"><path d="M9 2h5v5M14 2 7 9M12 9.5V13a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>'
+          : esc(it.item)) + '</h3>' +
       (it.notes ? '<p class="notes">' + esc(it.notes) + '</p>' : '') +
-      ((price || link) ? '<p class="meta">' +
-        (price ? '<span>' + esc(price) + '</span>' : '') +
-        (link ? '<a href="' + esc(link) + '" target="_blank" rel="noopener">See it online</a>' : '') +
-      '</p>' : '') + '</div></div>';
+      (KIDS_VIEW && price ? '<p class="price">' + esc(price) + '</p>' : '') +
+      '</div></div>';
     if (!KIDS_VIEW) {
       const act = document.createElement('div');
       act.className = 'act';
       const isBusy = busy.has(it.id);
+      if (price) act.insertAdjacentHTML('beforeend', '<span class="price">' + esc(price) + '</span>');
       if (claimed) {
-        act.innerHTML = '<span class="stamp' + (justStamped === it.id ? ' pop' : '') + '">Bought by ' + esc(it.claimedBy) + '</span>';
+        const col = document.createElement('div');
+        col.className = 'claim-col';
+        col.innerHTML = '<span class="stamp' + (justStamped === it.id ? ' pop' : '') + '">Bought by ' + esc(it.claimedBy) + '</span>';
         if (myName && it.claimedBy.toLowerCase() === myName.toLowerCase()) {
           const u = document.createElement('button');
           u.className = 'ghost';
           u.textContent = isBusy ? 'Saving…' : 'Untick';
           u.disabled = isBusy;
           u.onclick = () => act_(it, 'unclaim');
-          act.appendChild(u);
+          col.appendChild(u);
         }
+        act.appendChild(col);
       } else {
         const b = document.createElement('button');
         b.className = 'primary';
