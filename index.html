@@ -20,13 +20,13 @@
   * { box-sizing: border-box; }
   body {
     margin: 0;
-    background: var(--snow);
+    background: var(--snow) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='280' viewBox='0 0 280 280'%3E%3Cg fill='%232E5A4C' fill-opacity='.11' stroke='none'%3E %3Cpath transform='translate(30 30)' d='M0 -6L1.6 -1.6L6 0L1.6 1.6L0 6L-1.6 1.6L-6 0L-1.6 -1.6Z'/%3E%3Cpath transform='translate(140 20) scale(.7)' d='M0 -6L1.6 -1.6L6 0L1.6 1.6L0 6L-1.6 1.6L-6 0L-1.6 -1.6Z'/%3E%3Cpath transform='translate(250 120) scale(.8)' d='M0 -6L1.6 -1.6L6 0L1.6 1.6L0 6L-1.6 1.6L-6 0L-1.6 -1.6Z'/%3E%3Cpath transform='translate(120 140) scale(.6)' d='M0 -6L1.6 -1.6L6 0L1.6 1.6L0 6L-1.6 1.6L-6 0L-1.6 -1.6Z'/%3E%3Cpath transform='translate(20 250) scale(.9)' d='M0 -6L1.6 -1.6L6 0L1.6 1.6L0 6L-1.6 1.6L-6 0L-1.6 -1.6Z'/%3E%3Cpath transform='translate(260 260) scale(.6)' d='M0 -6L1.6 -1.6L6 0L1.6 1.6L0 6L-1.6 1.6L-6 0L-1.6 -1.6Z'/%3E %3Cg transform='translate(215 55)'%3E%3Ccircle r='15'/%3E%3Cellipse rx='27' ry='6' transform='rotate(-20)' fill='none' stroke='%232E5A4C' stroke-opacity='.11' stroke-width='3'/%3E%3C/g%3E %3Cg transform='translate(55 175) rotate(35)'%3E%3Cpath d='M0 -24C9 -15 9 6 7 14L-7 14C-9 6 -9 -15 0 -24Z'/%3E%3Cpath d='M-7 4L-14 18L-7 14ZM7 4L14 18L7 14Z'/%3E%3Cpath d='M-4 16L0 26L4 16Z'/%3E%3C/g%3E %3Cg transform='translate(185 200)'%3E%3Cpath d='M-30 10C-30 -6 -10 -12 8 -9C16 -7 21 -20 23 -30C24 -37 33 -37 34 -31C35 -26 30 -26 29 -22C27 -10 26 0 30 10Z'/%3E%3Cpath d='M-29 4C-40 4 -48 0 -55 -7C-48 7 -38 12 -27 12Z'/%3E%3Crect x='-24' y='8' width='7' height='14' rx='3'/%3E%3Crect x='14' y='8' width='7' height='14' rx='3'/%3E%3C/g%3E %3Cg transform='translate(70 75)'%3E%3Ccircle cx='-10' cy='0' r='9'/%3E%3Ccircle cx='0' cy='-5' r='9'/%3E%3Ccircle cx='10' cy='0' r='9'/%3E%3Ccircle cx='0' cy='4' r='9'/%3E%3Cellipse cx='20' cy='-4' rx='6' ry='5'/%3E%3Crect x='-9' y='10' width='3' height='9'/%3E%3Crect x='6' y='10' width='3' height='9'/%3E%3C/g%3E %3C/g%3E%3C/svg%3E") repeat;
     color: var(--ink);
     font: 400 17px/1.5 "Instrument Sans", system-ui, sans-serif;
   }
   main { max-width: 44rem; margin: 0 auto; padding: 3rem 1.25rem 6rem; }
 
-  h1 {
+  .list-title {
     font-family: "Young Serif", Georgia, serif;
     font-weight: 400;
     font-size: clamp(2.6rem, 9vw, 4.2rem);
@@ -34,6 +34,27 @@
     margin: 0 0 .9rem;
     color: var(--pine);
   }
+  .hero {
+    background: var(--paper);
+    border-radius: 22px;
+    border: 1px solid var(--line);
+    padding: 2rem 1.5rem 1.75rem;
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  .hero img {
+    width: 9.5rem; height: 9.5rem; object-fit: cover; border-radius: 50%;
+    border: 5px solid var(--snow); box-shadow: 0 0 0 3px var(--pine);
+    display: block; margin: 0 auto 1.25rem;
+  }
+  .hero h1 {
+    font-family: "Young Serif", Georgia, serif; font-weight: 400;
+    font-size: clamp(2.2rem, 8vw, 3.2rem); line-height: 1.05;
+    color: var(--pine); margin: 0 0 1rem;
+  }
+  .hero p { max-width: 32rem; margin: 0 auto .9rem; font-size: 1.05rem; }
+  .hero .sign { color: var(--berry); font-family: "Young Serif", Georgia, serif; font-size: 1.15rem; margin-bottom: 1.5rem; }
+  .hero a.primary { display: inline-block; text-decoration: none; }
   header p { margin: .2rem 0; color: var(--muted); max-width: 34rem; }
   .who { font-size: .95rem; }
   .linkish {
@@ -134,8 +155,14 @@
 </head>
 <body>
 <main>
-  <header>
-    <h1 id="title">Christmas lists</h1>
+  <section class="hero" aria-labelledby="heroTitle">
+    <img id="heroPhoto" alt="" hidden>
+    <h1 id="heroTitle"></h1>
+    <div id="heroText"></div>
+    <a class="primary" href="#lists">See the lists</a>
+  </section>
+  <header id="lists">
+    <h2 class="list-title" id="title">Christmas lists</h2>
     <p id="intro"></p>
     <p class="who" id="who"></p>
   </header>
@@ -162,7 +189,22 @@
 const CONFIG = {
   // Paste your Apps Script web app URL between the quotes. Leave empty to see demo data.
   API_URL: 'https://script.google.com/macros/s/AKfycbwKplzd9th5fUW7TMIaiyoDEsDxSTbbdJ-7UNRNB6LNYiBdXEv6KAuzWXtu1Sdm-Xs/exec',
-  TITLE: 'Christmas lists'
+  TITLE: 'Christmas lists',
+  // Welcome section at the top. Put the photo in the same GitHub folder as this file.
+  HERO: {
+    photo: 'jasper.jpg',
+    heading: 'Hello from Jasper',
+    text: [
+      'Jasper loves stories, animals of every kind, and anything with wheels. Lately it\u2019s all Gruffalo books and tractors.',
+      'Thank you so much for thinking of him this Christmas. Whether or not you pick something from his list, we\u2019re so grateful to have you in his life.'
+    ],
+    sign: 'With love, Matthew, Sophie and Jasper'
+  },
+  // Tabs always shown, in this order. "name" must match the Child column in the Sheet.
+  CHILDREN: [
+    { name: 'Jasper' },
+    { name: 'Baby', empty: 'Arriving in 2027. Nothing on this list yet.' }
+  ]
 };
 /* ==================== */
 
@@ -220,7 +262,15 @@ function fmtPrice(p) {
   if (!isNaN(n) && n > 0) return '£' + (Number.isInteger(n) ? n : n.toFixed(2));
   return p;
 }
-function children() { return [...new Set(items.map(i => i.child))]; }
+const norm = s => String(s).trim().toLowerCase();
+function children() {
+  const out = [];
+  [...(CONFIG.CHILDREN || []).map(c => c.name), ...items.map(i => i.child)].forEach(n => {
+    if (n && !out.some(o => norm(o) === norm(n))) out.push(n);
+  });
+  return out;
+}
+function itemsFor(name) { return items.filter(i => norm(i.child) === norm(name)); }
 
 function renderHeader() {
   document.title = CONFIG.TITLE;
@@ -247,8 +297,9 @@ function renderTabs() {
   kids.forEach(name => {
     const b = document.createElement('button');
     b.setAttribute('aria-pressed', name === active);
-    const left = items.filter(i => i.child === name && !i.claimedBy).length;
-    b.innerHTML = esc(name) + (KIDS_VIEW ? '' : '<span class="count">' + left + ' left</span>');
+    const list = itemsFor(name);
+    const left = list.filter(i => !i.claimedBy).length;
+    b.innerHTML = esc(name) + (KIDS_VIEW || !list.length ? '' : '<span class="count">' + left + ' left</span>');
     b.onclick = () => { active = name; render(); };
     nav.appendChild(b);
   });
@@ -256,8 +307,12 @@ function renderTabs() {
 
 function renderList() {
   const box = $('#list');
-  const mine = items.filter(i => i.child === active);
-  if (!mine.length) { box.innerHTML = '<p class="status">Nothing on this list yet.</p>'; return; }
+  const mine = itemsFor(active);
+  if (!mine.length) {
+    const cfg = (CONFIG.CHILDREN || []).find(c => norm(c.name) === norm(active));
+    box.innerHTML = '<p class="status">' + esc((cfg && cfg.empty) || 'Nothing on this list yet.') + '</p>';
+    return;
+  }
   const ul = document.createElement('ul');
   mine.forEach(it => {
     const claimed = !KIDS_VIEW && !!it.claimedBy;
@@ -356,6 +411,22 @@ async function load(first) {
   }
 }
 
+function renderHero() {
+  const h = CONFIG.HERO;
+  if (!h) { document.querySelector('.hero').remove(); return; }
+  $('#heroTitle').textContent = h.heading || '';
+  $('#heroText').innerHTML = (h.text || []).map(t => '<p>' + esc(t) + '</p>').join('') +
+    (h.sign ? '<p class="sign">' + esc(h.sign) + '</p>' : '');
+  if (h.photo) {
+    const img = $('#heroPhoto');
+    img.onload = () => { img.hidden = false; };
+    img.onerror = () => img.remove();
+    img.alt = h.heading || '';
+    img.src = h.photo;
+  }
+}
+
+renderHero();
 renderHeader();
 load(true);
 // Pick up other people's ticks while the page is open
