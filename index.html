@@ -422,6 +422,35 @@
   @media (prefers-reduced-motion: reduce) {
     .report, .approved, .verdict { animation: none; }
   }
+  .sack-meter {
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+    background: #123A61; border: 1px solid rgba(242,201,76,.45);
+    border-radius: 18px; padding: 1rem 1rem .9rem; margin: 0 0 1.4rem;
+  }
+  .sack-big svg { width: 150px; height: 172px; overflow: visible; display: block; }
+  .sack-meter.lvl-stuffed .sack-big svg { animation: bulge 2.6s ease-in-out infinite; transform-origin: 50% 92%; }
+  @keyframes bulge { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05, .97); } }
+  .sack-sparkle { animation: twinkle .8s ease-in-out infinite alternate; }
+  .sack-meter .label { margin: .3rem 0 .8rem; font-size: .95rem; color: #D8E6F3; }
+  .sack-meter .label b { color: var(--gold, #F2C94C); }
+  .sack-scale { list-style: none; margin: 0; padding: 0; display: flex; gap: .35rem; align-items: flex-end; }
+  .sack-scale li { width: 46px; padding: 3px; border-radius: 12px; opacity: .35; border: 2px solid transparent; }
+  .sack-scale li.past { opacity: .8; }
+  .sack-scale li.on { opacity: 1; border-color: var(--gold, #F2C94C); background: rgba(242,201,76,.15); }
+  .sack-scale svg { width: 100%; height: auto; display: block; }
+  @media (prefers-reduced-motion: reduce) { .sack-meter.lvl-stuffed .sack-big svg, .sack-sparkle { animation: none; } }
+
+  .sack-section { margin-top: 2.2rem; }
+  .sack-title { display: flex; align-items: center; gap: .5rem; margin: 0 0 .2rem; color: #fff; font-family: "Young Serif", Georgia, serif; font-weight: 400; font-size: 1.5rem; }
+  .sack-ico { width: 34px; height: 34px; }
+  .sack-note { margin: 0 0 .9rem; color: #D8E6F3; font-size: .95rem; }
+  .sack-list .item { padding: .6rem .9rem; opacity: .92; }
+  .sack-list .thumb { width: 48px; height: 48px; }
+  .sack-list .item h3 { font-size: 1rem; }
+  .sack-list .notes { display: none; }
+  .sack-list .price { font-size: 1.05rem; }
+  .all-done { background: #fff; border-radius: 14px; padding: 1rem 1.1rem; margin: 0; color: var(--ink); }
+  .all-done a { color: var(--green, #1F7A4D); font-weight: 600; }
   /* ===== North Pole theme ===== */
   main { padding-top: 7rem; }
   .hero, .guide {
@@ -767,7 +796,11 @@ function renderList() {
     box.innerHTML = '<p class="status">' + esc((cfg && cfg.empty) || 'Nothing on this list yet.') + '</p>';
     return;
   }
+  const wishes = KIDS_VIEW ? mine : mine.filter(i => !i.claimed);
+  const sacked = KIDS_VIEW ? [] : mine.filter(i => i.claimed);
   const ul = document.createElement('ul');
+  const sackUl = document.createElement('ul');
+  sackUl.className = 'sack-list';
   mine.forEach(it => {
     const claimed = !KIDS_VIEW && !!it.claimed;
     const li = document.createElement('li');
@@ -814,34 +847,81 @@ function renderList() {
       }
       li.appendChild(act);
     }
-    ul.appendChild(li);
+    (claimed ? sackUl : ul).appendChild(li);
   });
   box.innerHTML = '';
-  box.appendChild(ul);
+  if (wishes.length) box.appendChild(ul);
+  else box.insertAdjacentHTML('beforeend', '<p class="all-done">&#127881; Every gift on the list has been taken. Thank you! You can still choose something yourself on the <a href="#ideas">ideas page</a>.</p>');
+  if (sacked.length) {
+    const sec = document.createElement('section');
+    sec.className = 'sack-section';
+    sec.innerHTML = '<h3 class="sack-title">' + SACK_ICON + '<span>In Santa’s sack</span></h3>' +
+      '<p class="sack-note">Already bought by someone, so no need to get these.</p>';
+    sec.appendChild(sackUl);
+    box.appendChild(sec);
+  }
   justStamped = null;
 }
 
 function render() { renderHeader(); renderTabs(); renderList(); renderSleigh(); }
 
-const SLEIGH_SVG = '<svg class="ride" viewBox="0 0 64 40" aria-hidden="true">' +
-  '<path d="M8 26 C 8 14, 20 12, 26 18 L 46 18 C 50 18, 52 14, 52 10 L 56 10 C 56 20, 52 28, 42 28 L 14 28 C 10 28, 8 27, 8 26 Z" fill="#C8202F"/>' +
-  '<path d="M4 33 L 52 33 C 58 33, 60 29, 60 26" stroke="#F2C94C" stroke-width="3" fill="none" stroke-linecap="round"/>' +
-  '<path d="M16 28 L 14 33 M 40 28 L 42 33" stroke="#F2C94C" stroke-width="2.5"/>' +
-  '<rect x="27" y="6" width="16" height="14" rx="2" fill="#1F7A4D"/><rect x="33" y="6" width="4" height="14" fill="#F2C94C"/>' +
-  '<rect x="16" y="9" width="11" height="10" rx="2" fill="#F2C94C"/></svg>';
+const SACK_ICON = '<svg class="sack-ico" viewBox="0 0 40 40" aria-hidden="true"><path d="M12 12 C 6 18, 4 30, 10 35 C 15 38, 25 38, 30 35 C 36 30, 34 18, 28 12 Z" fill="#B5793F"/><path d="M13 12 L 27 12" stroke="#7A4A1E" stroke-width="3" stroke-linecap="round"/><path d="M14 10 C 16 4, 24 4, 26 10" fill="#C8202F"/><rect x="17" y="5" width="6" height="7" rx="1" fill="#F2C94C"/></svg>';
+
+const SACK_LEVELS = [
+  { min: 0,  key: 'empty',   fill: 0,    text: 'Santa’s sack is <b>empty</b>. Be the first to fill it!' },
+  { min: 1,  key: 'light',   fill: .28,  text: 'Santa’s sack is feeling a little <b>light</b>.' },
+  { min: 10, key: 'getting', fill: .58,  text: 'Santa’s sack is <b>getting there</b>!' },
+  { min: 15, key: 'full',    fill: .86,  text: 'Santa’s sack is <b>full</b>!' },
+  { min: 16, key: 'stuffed', fill: 1,    text: 'Santa’s sack is <b>stuffed full of gifts</b>! The reindeer may need a rest.' }
+];
+
+const SACK_PRESENTS = [
+  [47, 12, 26, 24, '#C8202F', 0], [26, 18, 22, 20, '#1F7A4D', -12], [72, 16, 22, 22, '#E3A72F', 10],
+  [38, -4, 20, 18, '#2E6FB5', 8], [62, -8, 22, 20, '#1F7A4D', -6], [18, 2, 18, 18, '#C8202F', -20],
+  [84, 0, 20, 20, '#C8202F', 18], [50, -26, 20, 18, '#E3A72F', -4]
+];
+const SACK_COUNTS = [0, 1, 3, 5, 8];
+const SACK_WIDTH = [.82, .9, .96, 1, 1.1];
+
+function sackPic(level, cls) {
+  const n = SACK_COUNTS[level], sx = SACK_WIDTH[level];
+  const presents = SACK_PRESENTS.slice(0, n).map(([x, y, w, h, c, r]) => {
+    const cx = x + w / 2, cy = y + h / 2, rib = c === '#E3A72F' ? '#C8202F' : '#F2C94C';
+    return '<g transform="rotate(' + r + ' ' + cx + ' ' + cy + ')">' +
+      '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="2.5" fill="' + c + '"/>' +
+      '<rect x="' + (cx - 2.5) + '" y="' + y + '" width="5" height="' + h + '" fill="' + rib + '"/>' +
+      '<rect x="' + x + '" y="' + (cy - 2.5) + '" width="' + w + '" height="5" fill="' + rib + '"/></g>';
+  }).join('');
+  const body = 'M30 40 C 10 58, 8 100, 24 116 C 36 128, 84 128, 96 116 C 112 100, 110 58, 90 40 Z';
+  const squash = level === 0 ? ' translate(0 30) scale(1 .75)' : '';
+  const sparkle = level === 4
+    ? '<g class="sack-sparkle" fill="#F2C94C"><path d="M8 20 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2z"/><path d="M110 30 l1.6 4 4 1.6 -4 1.6 -1.6 4 -1.6 -4 -4 -1.6 4 -1.6z"/><path d="M104 -2 l1.4 3.5 3.5 1.4 -3.5 1.4 -1.4 3.5 -1.4 -3.5 -3.5 -1.4 3.5 -1.4z"/></g>'
+    : '';
+  return '<svg class="' + cls + '" viewBox="-6 -32 132 164" aria-hidden="true">' + sparkle + presents +
+    '<g transform="translate(60 0) scale(' + sx + ' 1) translate(-60 0)' + squash + '">' +
+      '<path d="' + body + '" fill="#C98E52" stroke="#6B3F17" stroke-width="3"/>' +
+      '<path d="M40 70 C 46 90, 44 104, 38 112 M 82 66 C 78 86, 80 100, 86 110" stroke="#A86E37" stroke-width="2.5" fill="none" stroke-linecap="round"/>' +
+      '<path d="M26 41 C 46 34, 74 34, 94 41" stroke="#6B3F17" stroke-width="7" fill="none" stroke-linecap="round"/>' +
+      (level === 0 ? '<path d="M50 34 C 52 26, 58 26, 60 34 C 62 26, 68 26, 70 34" stroke="#C8202F" stroke-width="4" fill="none" stroke-linecap="round"/>' : '') +
+    '</g></svg>';
+}
 
 function renderSleigh() {
   const el = $('#sleigh');
   const list = active ? itemsFor(active) : [];
   if (!(CONFIG.FUN && CONFIG.FUN.sleigh) || KIDS_VIEW || !list.length) { el.hidden = true; return; }
-  const done = list.filter(i => i.claimed).length, total = list.length;
-  const pct = Math.round(done / total * 100);
-  if (!el.firstChild) el.innerHTML = '<div class="track"><div class="fill"></div>' + SLEIGH_SVG + '</div><p class="label"></p>';
-  el.querySelector('.fill').style.width = Math.max(pct, 4) + '%';
-  el.querySelector('.ride').style.left = Math.max(pct, 12) + '%';
-  el.querySelector('.label').innerHTML = done === total
-    ? '<b>Every gift is sorted!</b> Santa’s sleigh is full.'
-    : '<b>' + done + ' of ' + total + '</b> gifts sorted for ' + esc(active);
+  const done = list.filter(i => i.claimed).length;
+  let li = 0;
+  SACK_LEVELS.forEach((l, k) => { if (done >= l.min) li = k; });
+  const lvl = SACK_LEVELS[li];
+  const scale = SACK_LEVELS.map((l, k) =>
+    '<li class="' + (k === li ? 'on' : k < li ? 'past' : '') + '">' + sackPic(k, 'mini') + '</li>').join('');
+  el.className = 'sleigh sack-meter lvl-' + lvl.key;
+  el.setAttribute('role', 'img');
+  el.setAttribute('aria-label', lvl.text.replace(/<[^>]+>/g, ''));
+  el.innerHTML = '<div class="sack-big">' + sackPic(li, 'big') + '</div>' +
+    '<p class="label">' + lvl.text + '</p>' +
+    '<ol class="sack-scale">' + scale + '</ol>';
   el.hidden = false;
 }
 
