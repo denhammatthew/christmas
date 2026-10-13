@@ -344,6 +344,84 @@
   @keyframes gallop { from { transform: rotate(-22deg); } to { transform: rotate(22deg); } }
   .flyby .trail { animation: twinkle .4s linear infinite alternate; }
   @keyframes twinkle { from { opacity: .3; } to { opacity: 1; } }
+  .hero-top { display: flex; flex-wrap: wrap; gap: .6rem; justify-content: center; align-items: center; margin: 0 0 1.2rem; }
+  .hero-top .sleeps { margin: 0; }
+  .santa-btn {
+    font: inherit; font-weight: 700; font-size: 1.05rem; cursor: pointer;
+    background: var(--gold, #F2C94C); color: #3A2A00; border: 0;
+    padding: .5rem 1.1rem; border-radius: 999px; box-shadow: 0 3px 0 #B8901F;
+    animation: nudge 3.5s ease-in-out 1.5s infinite;
+  }
+  @keyframes nudge { 0%, 86%, 100% { transform: none; } 90% { transform: rotate(-4deg) scale(1.06); } 94% { transform: rotate(4deg) scale(1.06); } }
+  @media (prefers-reduced-motion: reduce) { .santa-btn { animation: none; } }
+  .report-overlay {
+    position: fixed; inset: 0; z-index: 950; overflow-y: auto;
+    background: radial-gradient(circle at 50% 30%, #24578A 0%, #0B2340 75%);
+    display: grid; place-items: center; padding: 1.5rem 1rem;
+  }
+  .report-overlay[hidden] { display: none; }
+  .checker { text-align: center; color: #fff; }
+  .check-title { font-size: 1.15rem; color: #D8E6F3; margin: 0 0 .6rem; }
+  .dots span { animation: dot 1.2s infinite; opacity: 0; }
+  .dots span:nth-child(2) { animation-delay: .2s; } .dots span:nth-child(3) { animation-delay: .4s; }
+  @keyframes dot { 0%, 20% { opacity: 0; } 40%, 100% { opacity: 1; } }
+  .check-name { font-family: "Young Serif", Georgia, serif; font-size: clamp(3rem, 14vw, 4.6rem); margin: 0 0 1.2rem; line-height: 1; }
+  .nn { display: flex; gap: .9rem; justify-content: center; }
+  .nn-word {
+    font-family: "Young Serif", Georgia, serif; font-size: clamp(1.5rem, 7vw, 2.1rem);
+    padding: .45rem 1.1rem; border-radius: 14px; border: 3px solid rgba(255,255,255,.25);
+    color: rgba(255,255,255,.35); transition: all .08s;
+  }
+  .nn-word.on.naughty { background: #3B3F4A; color: #fff; border-color: #fff; }
+  .nn-word.on.nice { background: var(--green, #1F7A4D); color: #fff; border-color: var(--gold, #F2C94C); box-shadow: 0 0 30px rgba(242,201,76,.6); }
+  .nn-word.final { transform: scale(1.18); transition: transform .4s cubic-bezier(.2,.9,.3,1.4); }
+  .verdict { font-size: 1.35rem; margin: 1.6rem 0 0; color: #fff; animation: pop .5s cubic-bezier(.2,.9,.3,1.4) both; }
+  .verdict b { color: var(--gold, #F2C94C); }
+  @keyframes pop { from { transform: scale(.5); opacity: 0; } to { transform: none; opacity: 1; } }
+
+  .report {
+    position: relative; width: 100%; max-width: 34rem;
+    background: #FFF9EA;
+    background-image: radial-gradient(rgba(160,120,40,.07) 1px, transparent 1px);
+    background-size: 6px 6px;
+    color: #3B2A16; border-radius: 6px;
+    border: 2px solid #D9B76A; outline: 6px double #C8202F; outline-offset: -14px;
+    padding: 2.2rem 1.6rem 1.6rem;
+    box-shadow: 0 24px 60px rgba(0,0,0,.45);
+    animation: unroll .7s cubic-bezier(.2,.9,.3,1) both;
+  }
+  @keyframes unroll { from { transform: scaleY(.1) translateY(-40px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .report:focus { outline: 6px double #C8202F; }
+  .report-head { text-align: center; border-bottom: 1px dashed #C9A35A; padding-bottom: 1rem; margin-bottom: 1rem; }
+  .report-from { margin: 0; font-size: .85rem; color: #8A6A3A; font-style: italic; }
+  .report h2 { font-family: "Young Serif", Georgia, serif; font-weight: 400; color: #A31B28; font-size: clamp(1.6rem, 6vw, 2.1rem); margin: .3rem 0; }
+  .report-sub { margin: 0; color: #5E4626; }
+  .report-grid { margin: 0; display: grid; gap: .7rem; }
+  .report-grid div { display: grid; grid-template-columns: 9.5rem 1fr; gap: .6rem; align-items: baseline; }
+  .report-grid dt { font-weight: 700; color: #1F5E3C; }
+  .report-grid dd { margin: 0; font-family: "Patrick Hand", "Comic Sans MS", cursive; font-size: 1.15rem; line-height: 1.35; color: #24384C; }
+  .report-summary { margin: 1.3rem 0 0; padding-top: 1rem; border-top: 1px dashed #C9A35A; font-family: "Patrick Hand", "Comic Sans MS", cursive; font-size: 1.25rem; line-height: 1.4; color: #24384C; }
+  .report-foot { position: relative; display: flex; gap: 1.5rem; flex-wrap: wrap; margin-top: 1.3rem; padding-right: 6.5rem; }
+  .sig { display: flex; flex-direction: column; }
+  .sig-name { font-family: "Patrick Hand", "Comic Sans MS", cursive; font-size: 1.6rem; color: #1B3A6B; transform: rotate(-3deg); line-height: 1.1; }
+  .sig-role { font-size: .78rem; color: #8A6A3A; border-top: 1px solid #C9A35A; padding-top: .15rem; }
+  .approved {
+    position: absolute; right: 0; top: -.4rem;
+    font-family: "Young Serif", Georgia, serif; font-size: .95rem; line-height: 1.15; text-align: center;
+    color: #C8202F; border: 3px solid #C8202F; border-radius: 10px; padding: .45rem .55rem;
+    transform: rotate(-12deg); opacity: .85;
+    animation: stampin .45s cubic-bezier(.2,.9,.3,1.3) .7s both;
+  }
+  @keyframes stampin { from { transform: rotate(-12deg) scale(2.4); opacity: 0; } to { transform: rotate(-12deg) scale(1); opacity: .85; } }
+  .report-actions { display: flex; gap: 1rem; align-items: center; justify-content: center; margin-top: 1.6rem; flex-wrap: wrap; }
+  .report-actions a.primary { text-decoration: none; }
+  .report-actions .ghost { color: #5E4626; }
+  @media (max-width: 520px) {
+    .report-grid div { grid-template-columns: 1fr; gap: .1rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .report, .approved, .verdict { animation: none; }
+  }
   /* ===== North Pole theme ===== */
   main { padding-top: 7rem; }
   .hero, .guide {
@@ -390,7 +468,10 @@
       <path d="M51 85 Q59 92 67 85" stroke="#1C2B3A" stroke-width="2.6" fill="none" stroke-linecap="round"/>
       <ellipse cx="34" cy="104" rx="10" ry="7.5" fill="#F7D3B4"/><ellipse cx="84" cy="104" rx="10" ry="7.5" fill="#F7D3B4"/>
     </svg>
-    <p class="sleeps" id="sleeps" hidden></p>
+    <div class="hero-top">
+      <button type="button" class="santa-btn" id="santaBtn">&#127877; Santa’s Report</button>
+      <p class="sleeps" id="sleeps" hidden></p>
+    </div>
     <div class="photo-wrap">
       <img id="heroPhoto" alt="" hidden>
       <svg class="santa-hat" viewBox="0 0 120 100" aria-hidden="true">
@@ -474,6 +555,36 @@
   </button>
 </div>
 
+<div class="report-overlay" id="reportOverlay" hidden role="dialog" aria-modal="true" aria-labelledby="checkTitle">
+  <div class="checker" id="checker">
+    <p class="check-title" id="checkTitle">Checking Santa’s list<span class="dots"><span>.</span><span>.</span><span>.</span></span></p>
+    <p class="check-name">Jasper</p>
+    <div class="nn">
+      <span class="nn-word naughty" id="nnNaughty">Naughty</span>
+      <span class="nn-word nice" id="nnNice">Nice</span>
+    </div>
+    <p class="verdict" id="verdict" hidden>&#11088; Jasper is on the <b>Nice List!</b> &#11088;</p>
+  </div>
+  <article class="report" id="report" hidden tabindex="-1">
+    <header class="report-head">
+      <p class="report-from">From the desk of Father Christmas, North Pole</p>
+      <h2>Official Behaviour Report</h2>
+      <p class="report-sub">Child: <b>Jasper</b> &middot; Year: <b id="reportYear"></b></p>
+    </header>
+    <dl class="report-grid" id="reportGrid"></dl>
+    <p class="report-summary" id="reportSummary"></p>
+    <footer class="report-foot">
+      <div class="sig"><span class="sig-name">Santa Claus</span><span class="sig-role">Father Christmas</span></div>
+      <div class="sig"><span class="sig-name">Elf Tinsel</span><span class="sig-role">Head of Nice List Verification</span></div>
+      <span class="approved" aria-hidden="true">NICE LIST<br>APPROVED</span>
+    </footer>
+    <div class="report-actions">
+      <a class="primary" href="#list" id="reportToList">See Jasper’s list</a>
+      <button type="button" class="ghost" id="reportClose">Close</button>
+    </div>
+  </article>
+</div>
+
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -483,7 +594,20 @@ const CONFIG = {
   API_URL: 'https://script.google.com/macros/s/AKfycbwKplzd9th5fUW7TMIaiyoDEsDxSTbbdJ-7UNRNB6LNYiBdXEv6KAuzWXtu1Sdm-Xs/exec',
   TITLE: 'Christmas lists',
   // Fun extras. Set any to false to switch it off.
-  FUN: { unwrap: true, snow: true, sleeps: true, sleigh: true },
+  FUN: { unwrap: true, snow: true, sleeps: true, sleigh: true, report: true },
+  // Santa's behaviour report. Edit freely.
+  REPORT: [
+    ['Furniture climbing', 'Olympic standard. The elves are impressed; Mrs Claus has asked us to stop encouraging him.'],
+    ['Bear care', '10 out of 10. Bear has not been left behind once all year. Exemplary friendship.'],
+    ['Reading', 'Outstanding. A committed member of the Julia Donaldson and Rachel Bright fan club.'],
+    ['Gardening', 'Keen junior assistant to Daddy. Enthusiasm high; precision still developing.'],
+    ['Bath time', 'Maximum splash rating. Reindeer have requested waterproofs.'],
+    ['Singing', 'Nursery rhymes performed daily with great gusto. Encores frequent.'],
+    ['Den building', 'Top-quality engineering. The elves would like the plans.'],
+    ['Animal drawing requests', 'Very many. Mummy and Daddy are trying their best. Santa has seen the deer.'],
+    ['Big brother readiness', 'Excited and in training. Shows great promise.']
+  ],
+  REPORT_SUMMARY: 'After careful checking (twice), Santa is delighted to confirm that Jasper has been a very good boy this year and thoroughly deserves some lovely presents. Keep up the excellent work, Jasper.',
   // Shown after someone ticks a gift. {gift} is replaced with the gift's name.
   THANKS: 'Thanks for getting “{gift}”. It’s now marked as gifted, so nobody else will buy it. If you’d like to post it, just message Matthew or Sophie and we’ll send you our address.',
   // Welcome section at the top. Put the photo in the same GitHub folder as this file.
@@ -495,6 +619,7 @@ const CONFIG = {
       'His bear goes everywhere with him, and he loves soft animals of all kinds. He\u2019s a big fan of Julia Donaldson and Rachel Bright books, and he loves toy cars, trains, playing in the bath, singing nursery rhymes and making dens.',
       'He copies Matthew in the garden whenever he can, and his latest thing is asking us to draw animals for him, like tigers and deer. Neither of us can draw, so he’s not always impressed.',
       'He’s also very excited about becoming a big brother next year.',
+      'Not sure what to choose? Tap Santa’s Report at the top for Santa’s official verdict on Jasper’s year, and a few clues about what he loves.',
       'Thank you so much for thinking of him this Christmas. Whether you choose something from his list or not, we’re really grateful.'
     ],
     sign: 'With love, Matthew and Sophie'
@@ -772,6 +897,46 @@ const snow = (() => {
   return { init };
 })();
 
+function santaReport() {
+  const btn = $('#santaBtn');
+  if (!(CONFIG.FUN && CONFIG.FUN.report)) { btn.remove(); return; }
+  const ov = $('#reportOverlay'), checker = $('#checker'), report = $('#report');
+  const naughty = $('#nnNaughty'), nice = $('#nnNice'), verdict = $('#verdict');
+  const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  $('#reportYear').textContent = new Date().getFullYear();
+  $('#reportGrid').innerHTML = (CONFIG.REPORT || []).map(([k, v]) => '<div><dt>' + esc(k) + '</dt><dd>' + esc(v) + '</dd></div>').join('');
+  $('#reportSummary').textContent = CONFIG.REPORT_SUMMARY || '';
+  let timers = [];
+  const later = (fn, ms) => timers.push(setTimeout(fn, ms));
+  function close() { timers.forEach(clearTimeout); timers = []; ov.hidden = true; document.body.style.overflow = ''; btn.focus(); }
+  $('#reportClose').onclick = close;
+  $('#reportToList').onclick = () => { timers.forEach(clearTimeout); ov.hidden = true; document.body.style.overflow = ''; };
+  ov.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+  btn.onclick = () => {
+    ov.hidden = false; document.body.style.overflow = 'hidden';
+    checker.hidden = false; report.hidden = true; verdict.hidden = true;
+    [naughty, nice].forEach(w => w.classList.remove('on', 'final'));
+    ov.scrollTop = 0;
+    if (reduce) {
+      nice.classList.add('on'); verdict.hidden = false;
+      later(showReport, 1500); return;
+    }
+    // Flicker between Naughty and Nice, slowing down, landing on Nice
+    const gaps = [90, 90, 100, 110, 120, 140, 160, 190, 230, 280, 340, 420, 520];
+    let t = 900, i = 0;
+    gaps.forEach(g => {
+      t += g; const onNice = i % 2 === 1; i++;
+      later(() => { naughty.classList.toggle('on', !onNice); nice.classList.toggle('on', onNice); }, t);
+    });
+    if (gaps.length % 2 === 1) { t += 600; later(() => { naughty.classList.remove('on'); nice.classList.add('on'); }, t); }
+    later(() => { nice.classList.add('final'); verdict.hidden = false; celebrate(nice.getBoundingClientRect(), null, true); }, t + 350);
+    later(showReport, t + 3300);
+  };
+  function showReport() {
+    checker.hidden = true; report.hidden = false; ov.scrollTop = 0; report.focus({ preventScroll: true });
+  }
+}
+
 function unwrapIntro() {
   if (!(CONFIG.FUN && CONFIG.FUN.unwrap) || location.hash || store.get('wishlist-unwrapped')) return;
   const box = $('#giftIntro'), btn = $('#giftBtn');
@@ -804,7 +969,7 @@ function askName() {
   });
 }
 
-function celebrate(rect, then) {
+function celebrate(rect, then, quiet) {
   const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   const layer = document.createElement('div');
   layer.className = 'celebrate';
@@ -832,8 +997,8 @@ function celebrate(rect, then) {
   const banner = document.createElement('div');
   banner.className = 'hohoho';
   banner.innerHTML = '<span class="ho">Ho ho ho!</span><span class="mc">Merry Christmas</span>';
-  layer.appendChild(banner);
-  if (!reduce) {
+  if (!quiet) layer.appendChild(banner);
+  if (!reduce && !quiet) {
     const f = document.createElement('div');
     f.className = 'flyby';
     f.innerHTML = '<svg viewBox="-80 -16 360 80" aria-hidden="true"><g class="trail" fill="#F2C94C"><circle cx="-70" cy="40" r="2.5"/><circle cx="-55" cy="34" r="2"/><circle cx="-40" cy="42" r="3"/><circle cx="-25" cy="36" r="2"/></g><g transform="translate(0 8)"><path d="M6 26 C 6 12, 20 10, 26 16 L 50 16 C 54 16, 56 12, 56 8 L 60 8 C 60 20, 56 28, 46 28 L 12 28 C 8 28, 6 27, 6 26 Z" fill="#C8202F"/><path d="M0 34 L 56 34 C 62 34, 64 30, 64 26" stroke="#F2C94C" stroke-width="3.5" fill="none" stroke-linecap="round"/><path d="M16 28 L 14 34 M 44 28 L 46 34" stroke="#F2C94C" stroke-width="3"/><rect x="28" y="2" width="18" height="15" rx="2" fill="#1F7A4D"/><rect x="35" y="2" width="4" height="15" fill="#F2C94C"/><rect x="14" y="6" width="13" height="11" rx="2" fill="#F2C94C"/><rect x="19" y="6" width="3" height="11" fill="#C8202F"/></g><path d="M60 26 C 90 26, 110 30, 140 34 M 140 34 C 170 36, 190 38, 214 38" stroke="#F2C94C" stroke-width="1.6" fill="none"/><g transform="translate(100 0)"><ellipse cx="22" cy="30" rx="18" ry="9" fill="#8B5A2B"/><path class="leg" d="M10 36 L 6 52" stroke="#6B4220" stroke-width="4" stroke-linecap="round"/><path class="leg b" d="M16 37 L 14 53" stroke="#6B4220" stroke-width="4" stroke-linecap="round"/><path class="leg b" d="M30 37 L 34 52" stroke="#6B4220" stroke-width="4" stroke-linecap="round"/><path class="leg" d="M35 35 L 42 50" stroke="#6B4220" stroke-width="4" stroke-linecap="round"/><path d="M36 26 L 44 14" stroke="#8B5A2B" stroke-width="8" stroke-linecap="round"/><ellipse cx="48" cy="12" rx="9" ry="6.5" fill="#8B5A2B"/><path d="M42 6 L 38 -6 M 40 -1 L 33 -4 M 46 5 L 48 -8 M 47 -2 L 54 -6" stroke="#C9A26B" stroke-width="2.6" stroke-linecap="round" fill="none"/><circle cx="50" cy="9" r="1.6" fill="#1C2B3A"/><circle cx="57" cy="13" r="3.4" fill="#E0202F"/><path d="M4 28 L -4 24" stroke="#8B5A2B" stroke-width="3" stroke-linecap="round"/><path d="M14 24 L 38 26" stroke="#C8202F" stroke-width="3"/></g><g transform="translate(176 0)"><ellipse cx="22" cy="30" rx="18" ry="9" fill="#8B5A2B"/><path class="leg" d="M10 36 L 6 52" stroke="#6B4220" stroke-width="4" stroke-linecap="round"/><path class="leg b" d="M16 37 L 14 53" stroke="#6B4220" stroke-width="4" stroke-linecap="round"/><path class="leg b" d="M30 37 L 34 52" stroke="#6B4220" stroke-width="4" stroke-linecap="round"/><path class="leg" d="M35 35 L 42 50" stroke="#6B4220" stroke-width="4" stroke-linecap="round"/><path d="M36 26 L 44 14" stroke="#8B5A2B" stroke-width="8" stroke-linecap="round"/><ellipse cx="48" cy="12" rx="9" ry="6.5" fill="#8B5A2B"/><path d="M42 6 L 38 -6 M 40 -1 L 33 -4 M 46 5 L 48 -8 M 47 -2 L 54 -6" stroke="#C9A26B" stroke-width="2.6" stroke-linecap="round" fill="none"/><circle cx="50" cy="9" r="1.6" fill="#1C2B3A"/><circle cx="57" cy="13" r="3.4" fill="#E0202F"/><path d="M4 28 L -4 24" stroke="#8B5A2B" stroke-width="3" stroke-linecap="round"/><path d="M14 24 L 38 26" stroke="#C8202F" stroke-width="3"/></g></svg>';
@@ -936,6 +1101,7 @@ window.addEventListener('hashchange', route);
 renderHero();
 renderSleeps();
 snow.init();
+santaReport();
 unwrapIntro();
 renderExtras();
 route();
