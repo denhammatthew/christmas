@@ -213,7 +213,7 @@
     .thumb-link:hover .thumb { transform: scale(2.6); box-shadow: 0 12px 30px rgba(5,20,40,.35); }
   }
   @media (prefers-reduced-motion: reduce) { .thumb { transition: none; } }
-  .hero img { width: 15rem; height: 15rem; margin-bottom: 1.5rem; }
+  .hero img { width: 15rem; height: 15rem; margin-bottom: 0; }
   .hero[hidden], .view[hidden] { display: none; }
   .choices { display: flex; flex-wrap: wrap; gap: .75rem; justify-content: center; margin-top: 1.75rem; }
   .choices a { text-decoration: none; font-size: 1.1rem; padding: .8rem 1.4rem; border-radius: 12px; }
@@ -265,6 +265,85 @@
     .hohoho { animation: hohofade 1.4s ease forwards; }
     @keyframes hohofade { 0%, 80% { opacity: 1; } 100% { opacity: 0; } }
   }
+  main { position: relative; z-index: 1; }
+  #snow { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+  .snow-toggle {
+    position: fixed; right: 12px; bottom: 12px; z-index: 50;
+    font: inherit; font-size: .85rem; font-weight: 600;
+    background: rgba(15,46,79,.9); color: #fff; border: 1px solid rgba(255,255,255,.45);
+    border-radius: 999px; padding: .35rem .8rem; cursor: pointer; backdrop-filter: blur(4px);
+  }
+  .sleeps {
+    display: inline-block; margin: 0 auto 1.1rem; padding: .35rem .95rem;
+    background: var(--green, #1F7A4D); color: #fff; border-radius: 999px;
+    font-weight: 600; font-size: 1rem; box-shadow: 0 2px 0 #14532F;
+  }
+  .sleeps b { color: var(--gold, #F2C94C); font-size: 1.15em; }
+
+  .sleigh { margin: 0 0 1.4rem; color: #fff; }
+  .sleigh .track {
+    position: relative; height: 46px; border-radius: 999px;
+    background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); overflow: visible;
+  }
+  .sleigh .fill {
+    position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px;
+    background: repeating-linear-gradient(-45deg, rgba(242,201,76,.55) 0 10px, rgba(242,201,76,.35) 10px 20px);
+    transition: width .9s cubic-bezier(.3,.8,.3,1);
+  }
+  .sleigh .ride {
+    position: absolute; top: 50%; width: 64px; height: 40px; transform: translate(-80%, -55%);
+    transition: left .9s cubic-bezier(.3,.8,.3,1);
+  }
+  .sleigh .label { margin: .45rem 0 0; font-size: .95rem; color: #D8E6F3; }
+  .sleigh .label b { color: #fff; }
+
+  .gift-intro {
+    position: fixed; inset: 0; z-index: 900; display: grid; place-items: center;
+    background: radial-gradient(circle at 50% 40%, #24578A 0%, #0F2E4F 70%);
+    transition: opacity .6s ease;
+  }
+  .gift-intro[hidden] { display: none; }
+  .gift-intro.fade { opacity: 0; }
+  .gift { background: none; border: 0; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 1rem; color: #fff; font: inherit; }
+  .gift svg { width: min(62vw, 240px); overflow: visible; animation: wiggle 2.4s ease-in-out infinite; transform-origin: 50% 100%; }
+  .gift-label { font-family: "Young Serif", Georgia, serif; font-size: 1.6rem; color: #fff; }
+  .gift:focus-visible { outline: 3px solid var(--gold, #F2C94C); outline-offset: 8px; border-radius: 12px; }
+  @keyframes wiggle {
+    0%, 70%, 100% { transform: rotate(0); }
+    75% { transform: rotate(-4deg); } 80% { transform: rotate(4deg); } 85% { transform: rotate(-3deg); } 90% { transform: rotate(2deg); }
+  }
+  .gift-intro.open .gift svg { animation: none; }
+  .gift-intro.open .g-lid { animation: lidoff .7s cubic-bezier(.3,.7,.4,1) forwards; transform-box: fill-box; transform-origin: 50% 100%; }
+  .gift-intro.open .gift-label { opacity: 0; transition: opacity .2s; }
+  @keyframes lidoff { to { transform: translate(60px, -160px) rotate(35deg); opacity: 0; } }
+  body.revealing .hero { animation: rise .8s cubic-bezier(.2,.9,.3,1.15) both; }
+  @keyframes rise { from { transform: translateY(60px) scale(.85); opacity: 0; } to { transform: none; opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    .gift svg, .gift-intro.open .g-lid, body.revealing .hero { animation: none; }
+    .sleigh .fill, .sleigh .ride { transition: none; }
+  }
+  .photo-wrap { position: relative; width: fit-content; margin: 0 auto 1.5rem; }
+  .photo-wrap .santa-hat {
+    position: absolute; width: 56%; top: -24%; left: 30%;
+    transform: rotate(18deg); transform-origin: 30% 90%;
+    filter: drop-shadow(0 4px 4px rgba(5,20,40,.25));
+    pointer-events: none;
+  }
+  .photo-wrap img[hidden] + .santa-hat { display: none; }
+  .flyby {
+    position: absolute; top: 10%; left: 0; width: 360px;
+    animation: flyby 2.3s cubic-bezier(.4,.1,.6,.9) .35s both;
+  }
+  @keyframes flyby {
+    0% { transform: translate(-380px, 50px) rotate(-6deg); }
+    50% { transform: translate(calc(50vw - 180px), -10px) rotate(-2deg); }
+    100% { transform: translate(calc(100vw + 30px), 30px) rotate(-8deg); }
+  }
+  .flyby .leg { animation: gallop .32s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: 50% 0; }
+  .flyby .leg.b { animation-delay: .16s; }
+  @keyframes gallop { from { transform: rotate(-22deg); } to { transform: rotate(22deg); } }
+  .flyby .trail { animation: twinkle .4s linear infinite alternate; }
+  @keyframes twinkle { from { opacity: .3; } to { opacity: 1; } }
   /* ===== North Pole theme ===== */
   main { padding-top: 7rem; }
   .hero, .guide {
@@ -311,7 +390,18 @@
       <path d="M51 85 Q59 92 67 85" stroke="#1C2B3A" stroke-width="2.6" fill="none" stroke-linecap="round"/>
       <ellipse cx="34" cy="104" rx="10" ry="7.5" fill="#F7D3B4"/><ellipse cx="84" cy="104" rx="10" ry="7.5" fill="#F7D3B4"/>
     </svg>
-    <img id="heroPhoto" alt="" hidden>
+    <p class="sleeps" id="sleeps" hidden></p>
+    <div class="photo-wrap">
+      <img id="heroPhoto" alt="" hidden>
+      <svg class="santa-hat" viewBox="0 0 120 100" aria-hidden="true">
+        <path d="M14 78 C 26 40, 52 14, 84 10 C 98 8, 108 18, 104 34 C 100 46, 94 52, 96 64 L 100 80 Z" fill="#C8202F"/>
+        <path d="M84 10 C 98 8, 108 18, 104 34 C 100 46, 94 52, 96 64 L 100 80 L 80 80 C 80 60, 88 40, 84 10 Z" fill="#000" opacity=".12"/>
+        <circle cx="100" cy="74" r="0" fill="none"/>
+        <rect x="4" y="70" width="108" height="22" rx="11" fill="#fff"/>
+        <rect x="4" y="70" width="108" height="22" rx="11" fill="none" stroke="#E5E9EE" stroke-width="2"/>
+        <circle cx="106" cy="36" r="12" fill="#fff" stroke="#E5E9EE" stroke-width="2"/>
+      </svg>
+    </div>
     <h1 id="heroTitle"></h1>
     <div id="heroText"></div>
     <div class="choices">
@@ -333,6 +423,7 @@
     <p class="who" id="who"></p>
   </header>
   <nav id="tabs" aria-label="Choose a list"></nav>
+  <div class="sleigh" id="sleigh" hidden></div>
   <section id="list" aria-live="polite"><p class="status">Loading the lists…</p></section>
   <div id="demoNote"></div>
   <p class="crosslink">Want to choose something yourself? <a href="#ideas">Ideas and sizes</a></p>
@@ -358,6 +449,31 @@
   </div>
 </dialog>
 
+<canvas id="snow" aria-hidden="true"></canvas>
+<button type="button" class="snow-toggle" id="snowToggle"></button>
+
+<div class="gift-intro" id="giftIntro" hidden>
+  <button type="button" class="gift" id="giftBtn" aria-label="Open the present">
+    <svg viewBox="0 0 200 200" aria-hidden="true">
+      <g class="g-box">
+        <rect x="30" y="88" width="140" height="100" rx="8" fill="#C8202F"/>
+        <rect x="90" y="88" width="20" height="100" fill="#F2C94C"/>
+        <rect x="30" y="88" width="140" height="10" fill="#000" opacity=".12"/>
+      </g>
+      <g class="g-lid">
+        <rect x="22" y="64" width="156" height="30" rx="7" fill="#DA2E3D"/>
+        <rect x="90" y="64" width="20" height="30" fill="#F2C94C"/>
+        <path d="M100 64 C 70 30, 44 44, 62 62 Z" fill="#F2C94C"/>
+        <path d="M100 64 C 130 30, 156 44, 138 62 Z" fill="#F2C94C"/>
+        <path d="M100 64 C 78 40, 60 48, 70 60 Z" fill="#D9A92E"/>
+        <path d="M100 64 C 122 40, 140 48, 130 60 Z" fill="#D9A92E"/>
+        <circle cx="100" cy="63" r="8" fill="#E8B83A"/>
+      </g>
+    </svg>
+    <span class="gift-label">Tap to open</span>
+  </button>
+</div>
+
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -366,6 +482,8 @@ const CONFIG = {
   // Paste your Apps Script web app URL between the quotes. Leave empty to see demo data.
   API_URL: 'https://script.google.com/macros/s/AKfycbwKplzd9th5fUW7TMIaiyoDEsDxSTbbdJ-7UNRNB6LNYiBdXEv6KAuzWXtu1Sdm-Xs/exec',
   TITLE: 'Christmas lists',
+  // Fun extras. Set any to false to switch it off.
+  FUN: { unwrap: true, snow: true, sleeps: true, sleigh: true },
   // Shown after someone ticks a gift. {gift} is replaced with the gift's name.
   THANKS: 'Thanks for getting “{gift}”. It’s now marked as gifted, so nobody else will buy it. If you’d like to post it, just message Matthew or Sophie and we’ll send you our address.',
   // Welcome section at the top. Put the photo in the same GitHub folder as this file.
@@ -578,7 +696,96 @@ function renderList() {
   justStamped = null;
 }
 
-function render() { renderHeader(); renderTabs(); renderList(); }
+function render() { renderHeader(); renderTabs(); renderList(); renderSleigh(); }
+
+const SLEIGH_SVG = '<svg class="ride" viewBox="0 0 64 40" aria-hidden="true">' +
+  '<path d="M8 26 C 8 14, 20 12, 26 18 L 46 18 C 50 18, 52 14, 52 10 L 56 10 C 56 20, 52 28, 42 28 L 14 28 C 10 28, 8 27, 8 26 Z" fill="#C8202F"/>' +
+  '<path d="M4 33 L 52 33 C 58 33, 60 29, 60 26" stroke="#F2C94C" stroke-width="3" fill="none" stroke-linecap="round"/>' +
+  '<path d="M16 28 L 14 33 M 40 28 L 42 33" stroke="#F2C94C" stroke-width="2.5"/>' +
+  '<rect x="27" y="6" width="16" height="14" rx="2" fill="#1F7A4D"/><rect x="33" y="6" width="4" height="14" fill="#F2C94C"/>' +
+  '<rect x="16" y="9" width="11" height="10" rx="2" fill="#F2C94C"/></svg>';
+
+function renderSleigh() {
+  const el = $('#sleigh');
+  const list = active ? itemsFor(active) : [];
+  if (!(CONFIG.FUN && CONFIG.FUN.sleigh) || KIDS_VIEW || !list.length) { el.hidden = true; return; }
+  const done = list.filter(i => i.claimed).length, total = list.length;
+  const pct = Math.round(done / total * 100);
+  if (!el.firstChild) el.innerHTML = '<div class="track"><div class="fill"></div>' + SLEIGH_SVG + '</div><p class="label"></p>';
+  el.querySelector('.fill').style.width = Math.max(pct, 4) + '%';
+  el.querySelector('.ride').style.left = Math.max(pct, 12) + '%';
+  el.querySelector('.label').innerHTML = done === total
+    ? '<b>Every gift is sorted!</b> Santa’s sleigh is full.'
+    : '<b>' + done + ' of ' + total + '</b> gifts sorted for ' + esc(active);
+  el.hidden = false;
+}
+
+function renderSleeps() {
+  const el = $('#sleeps');
+  if (!(CONFIG.FUN && CONFIG.FUN.sleeps)) return;
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  let xmas = new Date(now.getFullYear(), 11, 25);
+  if (today > xmas) xmas = new Date(now.getFullYear() + 1, 11, 25);
+  const days = Math.round((xmas - today) / 86400000);
+  el.innerHTML = days === 0 ? '&#127876; <b>Merry Christmas</b> from Jasper!'
+    : '&#127876; <b>' + days + '</b> ' + (days === 1 ? 'sleep' : 'sleeps') + ' until Christmas';
+  el.hidden = false;
+}
+
+const snow = (() => {
+  const cv = $('#snow'), btn = $('#snowToggle'), ctx = cv.getContext && cv.getContext('2d');
+  const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let flakes = [], on = false, raf = 0;
+  function size() { cv.width = innerWidth * devicePixelRatio; cv.height = innerHeight * devicePixelRatio; }
+  function make() {
+    const n = Math.round(Math.min(110, innerWidth / 9));
+    flakes = Array.from({ length: n }, () => ({
+      x: Math.random() * cv.width, y: Math.random() * cv.height,
+      r: (1 + Math.random() * 2.6) * devicePixelRatio, s: (.3 + Math.random() * .9) * devicePixelRatio,
+      w: Math.random() * Math.PI * 2, o: .45 + Math.random() * .5
+    }));
+  }
+  function tick() {
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    for (const f of flakes) {
+      f.y += f.s; f.w += .012; f.x += Math.sin(f.w) * .4 * devicePixelRatio;
+      if (f.y > cv.height + 5) { f.y = -5; f.x = Math.random() * cv.width; }
+      ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,255,255,' + f.o + ')'; ctx.fill();
+    }
+    raf = requestAnimationFrame(tick);
+  }
+  function set(v) {
+    on = v; store.set('wishlist-snow', v ? '1' : '0');
+    btn.textContent = v ? '\u2744 Stop the snow' : '\u2744 Let it snow';
+    cancelAnimationFrame(raf);
+    if (v) { size(); make(); tick(); } else ctx.clearRect(0, 0, cv.width, cv.height);
+  }
+  function init() {
+    if (!ctx || !(CONFIG.FUN && CONFIG.FUN.snow)) { btn.remove(); cv.remove(); return; }
+    const saved = store.get('wishlist-snow');
+    btn.onclick = () => set(!on);
+    addEventListener('resize', () => { if (on) { size(); make(); } });
+    set(saved === null ? !reduce : saved === '1');
+  }
+  return { init };
+})();
+
+function unwrapIntro() {
+  if (!(CONFIG.FUN && CONFIG.FUN.unwrap) || location.hash || store.get('wishlist-unwrapped')) return;
+  const box = $('#giftIntro'), btn = $('#giftBtn');
+  box.hidden = false;
+  btn.onclick = () => {
+    store.set('wishlist-unwrapped', '1');
+    box.classList.add('open');
+    setTimeout(() => {
+      box.classList.add('fade');
+      document.body.classList.add('revealing');
+      setTimeout(() => { box.remove(); document.body.classList.remove('revealing'); }, 900);
+    }, 650);
+  };
+}
 
 function askName() {
   return new Promise(resolve => {
@@ -626,8 +833,14 @@ function celebrate(rect, then) {
   banner.className = 'hohoho';
   banner.innerHTML = '<span class="ho">Ho ho ho!</span><span class="mc">Merry Christmas</span>';
   layer.appendChild(banner);
+  if (!reduce) {
+    const f = document.createElement('div');
+    f.className = 'flyby';
+    f.innerHTML = '<svg viewBox="-80 -16 360 80" aria-hidden="true"><g class="trail" fill="#F2C94C"><circle cx="-70" cy="40" r="2.5"/><circle cx="-55" cy="34" r="2"/><circle cx="-40" cy="42" r="3"/><circle cx="-25" cy="36" r="2"/></g><g transform="translate(0 8)"><path d="M6 26 C 6 12, 20 10, 26 16 L 50 16 C 54 16, 56 12, 56 8 L 60 8 C 60 20, 56 28, 46 28 L 12 28 C 8 28, 6 27, 6 26 Z" fill="#C8202F"/><path d="M0 34 L 56 34 C 62 34, 64 30, 64 26" stroke="#F2C94C" stroke-width="3.5" fill="none" stroke-linecap="round"/><path d="M16 28 L 14 34 M 44 28 L 46 34" stroke="#F2C94C" stroke-width="3"/><rect x="28" y="2" width="18" height="15" rx="2" fill="#1F7A4D"/><rect x="35" y="2" width="4" height="15" fill="#F2C94C"/><rect x="14" y="6" width="13" height="11" rx="2" fill="#F2C94C"/><rect x="19" y="6" width="3" height="11" fill="#C8202F"/></g><path d="M60 26 C 90 26, 110 30, 140 34 M 140 34 C 170 36, 190 38, 214 38" stroke="#F2C94C" stroke-width="1.6" fill="none"/><g transform="translate(100 0)"><ellipse cx="22" cy="30" rx="18" ry="9" fill="#8B5A2B"/><path class="leg" d="M10 36 L 6 52" stroke="#6B4220" stroke-width="4" stroke-linecap="round"/><path class="leg b" d="M16 37 L 14 53" stroke="#6B4220" stroke-width="4" stroke-linecap="round"/><path class="leg b" d="M30 37 L 34 52" stroke="#6B4220" stroke-width="4" stroke-linecap="round"/><path class="leg" d="M35 35 L 42 50" stroke="#6B4220" stroke-width="4" stroke-linecap="round"/><path d="M36 26 L 44 14" stroke="#8B5A2B" stroke-width="8" stroke-linecap="round"/><ellipse cx="48" cy="12" rx="9" ry="6.5" fill="#8B5A2B"/><path d="M42 6 L 38 -6 M 40 -1 L 33 -4 M 46 5 L 48 -8 M 47 -2 L 54 -6" stroke="#C9A26B" stroke-width="2.6" stroke-linecap="round" fill="none"/><circle cx="50" cy="9" r="1.6" fill="#1C2B3A"/><circle cx="57" cy="13" r="3.4" fill="#E0202F"/><path d="M4 28 L -4 24" stroke="#8B5A2B" stroke-width="3" stroke-linecap="round"/><path d="M14 24 L 38 26" stroke="#C8202F" stroke-width="3"/></g><g transform="translate(176 0)"><ellipse cx="22" cy="30" rx="18" ry="9" fill="#8B5A2B"/><path class="leg" d="M10 36 L 6 52" stroke="#6B4220" stroke-width="4" stroke-linecap="round"/><path class="leg b" d="M16 37 L 14 53" stroke="#6B4220" stroke-width="4" stroke-linecap="round"/><path class="leg b" d="M30 37 L 34 52" stroke="#6B4220" stroke-width="4" stroke-linecap="round"/><path class="leg" d="M35 35 L 42 50" stroke="#6B4220" stroke-width="4" stroke-linecap="round"/><path d="M36 26 L 44 14" stroke="#8B5A2B" stroke-width="8" stroke-linecap="round"/><ellipse cx="48" cy="12" rx="9" ry="6.5" fill="#8B5A2B"/><path d="M42 6 L 38 -6 M 40 -1 L 33 -4 M 46 5 L 48 -8 M 47 -2 L 54 -6" stroke="#C9A26B" stroke-width="2.6" stroke-linecap="round" fill="none"/><circle cx="50" cy="9" r="1.6" fill="#1C2B3A"/><circle cx="57" cy="13" r="3.4" fill="#E0202F"/><path d="M4 28 L -4 24" stroke="#8B5A2B" stroke-width="3" stroke-linecap="round"/><path d="M14 24 L 38 26" stroke="#C8202F" stroke-width="3"/></g></svg>';
+    layer.appendChild(f);
+  }
   document.body.appendChild(layer);
-  setTimeout(() => { layer.remove(); then && then(); }, reduce ? 1400 : 2100);
+  setTimeout(() => { layer.remove(); then && then(); }, reduce ? 1400 : 2700);
 }
 
 function thanks(it) {
@@ -721,6 +934,9 @@ function route() {
 window.addEventListener('hashchange', route);
 
 renderHero();
+renderSleeps();
+snow.init();
+unwrapIntro();
 renderExtras();
 route();
 renderHeader();
